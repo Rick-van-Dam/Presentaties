@@ -1,0 +1,310 @@
+---
+transition: "slide"
+highlightTheme: "vs2015"
+slideNumber: true
+title: "Meer waarde uit je tests"
+css : "my-theme.css"
+format: revealjs
+chalkboard: true
+navigation-mode: vertical
+controls: true
+highlight-style: monokai
+---
+
+# Voordelen van tests
+
+<!-- Bump mermaid from 10.2.0 to 10.9.0 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js" integrity="sha512-gx05X612uoaolzJ5Ee/786b3th+qzAm90TOvRwZJwnE8yr0sHQG8eLxdR0/Hbqc2IFh2mWHzzXk79g3atNSwsQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+::: {layout="[[70,30], [100]]"}
+
+- Snelle dev feedback loop
+- Helpt design issues te zien
+- Makkelijk refactoren
+- Documentatie
+
+```{mermaid}
+stateDiagram-v2
+    Coding --> RunTests
+    RunTests --> Coding
+```
+
+:::
+
+# Donkere kant van tests
+
+::: {layout="[[70,30], [100]]"}
+- Verkeerde tests hebben een negatieve waarde
+- Paar anti patterns:
+  - The Mockery
+  - The Inspector
+  - The Liar
+
+
+![](media/darkside.jpg){fig-align="left"}
+
+:::
+
+## The Mockery
+
+"A unit test contains so many mocks, stubs and/or fakes that the system under test isn’t even being tested at all, instead data returned from mocks is what is being tested."
+
+## The Inspector
+
+"A unit test that violates encapsulation in an effort to achieve 100% code coverage, but knows so much about what is going on in the object that any attempt to refactor will break the existing test and require any change to be reflected in the unit test."
+
+## The Liar
+
+"An entire unit test that passes all of the test cases it has and appears valid, but upon closer inspection it is discovered that it doesn’t really test the intended target at all."
+
+# Hoe voorkomen we deze anti patterns?
+
+## De unit van een unit test is niet een class
+
+<li>Focus op gedrag en voorkom het testen van implementatie details</li>
+<li class="fragment">Schrijf testen voor stabiele interfaces</li>
+<li class="fragment">Denk vanuit de gebruiker van je code</li>
+<li class="fragment">Maak een class/method niet public als dat alleen nodig is voor testen</li>
+
+## Implementatie details testen
+
+```{mermaid}
+classDiagram
+
+    Endpoint --* Mapper
+    Endpoint --* Validator
+
+    EndpointTests ..> Endpoint
+    MapperTests ..> Mapper
+    ValidatorTests ..> Validator    
+
+    note for Mapper "Moet public zijn \n Moeilijk te refactoren" 
+    note for Validator "Moet public zijn \n Moeilijk te refactoren" 
+
+namespace ExampleApi {
+    class Mapper
+    class Validator
+    class Endpoint
+}
+
+namespace Tests {
+    class EndpointTests
+    class ValidatorTests
+    class MapperTests
+}
+```
+
+## Gedrag testen
+
+```{mermaid}
+classDiagram
+
+    Endpoint --* Mapper
+    Endpoint --* Validator
+
+    EndpointTests ..> Endpoint
+
+    note for EndpointTests "Bevat tests die het hele gedrag van 'Endpoint' dekken \n Denk als een gebruiker van je api"    
+    note for Endpoint "Dit is een stabiele interface"    
+    note for Mapper "Implementatie detail \n Makkelijk te refactoren" 
+    note for Validator "Implementatie detail \n Makkelijk te refactoren" 
+
+namespace ExampleApi {
+    class Mapper
+    class Validator
+    class Endpoint
+}
+
+namespace Tests {
+    class EndpointTests
+}
+```
+
+## Gedrag testen
+
+```{mermaid}
+classDiagram
+
+    Endpoint1 --* StringUtils
+    Endpoint2 --* StringUtils
+
+    Endpoint1Tests ..> Endpoint1
+    Endpoint2Tests ..> Endpoint2
+
+    StringUtilsTests ..> StringUtils
+
+    note for StringUtils "Dit is een stabiele interface \n Denk als een gebruiker van StringUtils \n Bepaal wel of aparte tests hier meerwaarde hebben"
+
+namespace ExampleApi {
+    class Endpoint1
+    class Endpoint2
+}
+
+namespace Utils {
+    class StringUtils
+}
+
+namespace Tests {
+    class Endpoint1Tests
+    class Endpoint2Tests
+    class StringUtilsTests
+}
+```
+
+
+## Test doubles
+
+<li>Vervangende dependency voor in tests</li>
+<li>Handig voor volatile dependencies of om exceptions te kunnen testen</li>
+<li>Verschillende soorten test doubles</li>
+
+::: {.fragment}
+<li>Maar zorgen wel voor meer coupling</li>
+
+```cs
+_storageMock
+    .Setup(m => m.QueryBySpecificationAsync(It.IsAny<QueryByIdSpecification<Employee>>()))
+    .Returns(Task.FromResult(employees));
+```
+:::
+
+::: {.fragment}
+
+<li>Gebruik de echte implementatie als dat kan</li>
+
+```cs
+var jobValidator = new JobValidator();
+```
+:::
+
+<li class="fragment">Maakt je test cases ook realistischer</li>
+
+## Test doubles
+
+```{mermaid}
+classDiagram
+
+    Endpoint --* Mapper
+    Endpoint --* Validator
+
+    EndpointTests ..> Endpoint
+    EndpointTests ..> FakeDatabase
+
+    Endpoint ..|> IDatabase
+    Database ..|> IDatabase
+    FakeDatabase ..|> IDatabase
+
+namespace ExampleApi {
+    class Mapper
+    class Validator
+    class Endpoint
+    class IDatabase{
+      <<interface>>
+    }
+    class Database
+}
+
+namespace Tests {
+    class EndpointTests
+    class FakeDatabase
+}
+```
+
+## Builder pattern
+
+```cs
+var employee = new Employee()
+{
+    Id = "employeeId", 
+    Name = "Marie", 
+    // and a dozen more properties..
+};
+```
+
+- Test data initialiseren is gedoe
+<li class="fragment">Niet alle properties zijn relevant voor elke testcase = lastig leesbaar en onnodige coupling</li>
+
+::: {.fragment}
+<li>Oplossing: gebruik een builder pattern</li>
+
+```cs
+var employee = new EmployeeFaker()
+    // Only list relevant properties
+    .RuleFor(x => x.Name, "Marie")
+    .Generate();
+```
+:::
+
+## Builder pattern
+
+- Ook handig patroon voor andere zaken dan test data
+
+::: {.fragment}
+<li>Bijvoorbeeld voor het aanmaken van een nep http request</li>
+
+```cs
+var request = FakeHttpRequestDataBuilder.Create()
+    .SetBody(dto)
+    .Build();
+```
+:::
+
+# IO in tests
+
+- Er zijn meer opties dan een testdouble gebruiken met IO.
+<li class="fragment">Testcontainers brengen dependencies zoals DB's onder controle</li>
+<li class="fragment">ASP .NET's WebApplicationFactory laat je je api in memory draaien</li>
+<li class="fragment">Tests kunnen nog steeds snel en stabiel zijn</li>
+
+## IO in Tests
+
+- Setup is generiek te regelen waardoor test cases zelf heel simpel blijven.
+- https://github.com/Barsonax/CleanAspCoreWebApiTemplate
+
+```cs
+[Test]
+public async Task GetEmployeeById_ReturnsExpectedEmployee()
+{
+    //Arrange
+    var employee = new EmployeeFaker().Generate();
+    Sut.SeedData(context =>
+    {
+        context.Employees.Add(employee);
+    });
+
+    //Act
+    var response = await Sut.CreateClientFor<IEmployeeApiClient>(ClaimConstants.ReadRole).GetEmployeeById(employee.Id);
+    
+    //Assert
+    await response.AssertStatusCode(HttpStatusCode.OK);
+    await response.AssertJsonBodyIsEquivalentTo(new { Id = employee.Id });
+}
+```
+
+# Code Coverage
+
+<li>Zegt niet zoveel als globale metric</li>
+<li class="fragment">Vertelt je alleen of een regel code geraakt is, niet of dat correct was</li>
+
+::: {.fragment}
+<li>Wel handig om test cases te ontdekken</li>
+![](media/codecoverageinide.png)
+:::
+
+<li class="fragment">Kan helpen dode code op te sporen</li>
+<li class="fragment">Gebruik het als hulpmiddel en niet als harde target</li>
+
+# Vragen?
+
+# Bronnen
+
+- https://www.youtube.com/watch?v=EZ05e7EMOLM
+- https://www.continuousimprover.com/2023/04/unit-testing-scope.html
+- https://www.martinfowler.com/articles/mocksArentStubs.html
+- https://digitaltapestry.net/testify/manual/AntiPatterns.html
+
+# Libraries
+
+- https://testcontainers.com/
+- https://learn.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-8.0
+- https://github.com/bchavez/Bogus
