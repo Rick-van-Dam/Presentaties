@@ -43,6 +43,11 @@ stateDiagram-v2
 
 ![](media/darkside.jpg){fig-align="left"}
 
+
+::: footer
+https://digitaltapestry.net/testify/manual/AntiPatterns.html
+:::
+
 :::
 
 ## The Mockery
@@ -151,7 +156,7 @@ namespace Tests {
 }
 ```
 
-## Hoe kiezen jullie de unit van een test?
+# Hoe kiezen jullie de unit van een test?
 
 ## Test doubles
 
@@ -211,7 +216,7 @@ namespace Tests {
 }
 ```
 
-## Hoe gebruiken jullie test doubles?
+# Hoe gebruiken jullie test doubles?
 
 ## Builder pattern
 
@@ -252,7 +257,7 @@ var request = FakeHttpRequestDataBuilder.Create()
 ```
 :::
 
-## Welke patronen gebruiken jullie in tests?
+# Welke patronen gebruiken jullie in tests?
 
 # IO in tests
 
@@ -285,6 +290,8 @@ public async Task GetEmployeeById_ReturnsExpectedEmployee()
     await response.AssertJsonBodyIsEquivalentTo(new { Id = employee.Id });
 }
 ```
+
+# IO in tests good or bad?
 
 # Code Coverage
 
