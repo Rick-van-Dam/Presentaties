@@ -238,6 +238,7 @@ var employee = new Employee()
 ```cs
 var employee = new EmployeeFaker()
     // Only list relevant properties
+    // For id we can just default to a random guid, no need to think of a value as long as its unique.
     .RuleFor(x => x.Name, "Marie")
     .Generate();
 ```
@@ -252,7 +253,7 @@ var employee = new EmployeeFaker()
 
 ```cs
 var request = FakeHttpRequestDataBuilder.Create()
-    .SetBody(dto)
+    .SetBodyAsJson(dto)
     .Build();
 ```
 :::
