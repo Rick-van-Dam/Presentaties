@@ -35,40 +35,19 @@ stateDiagram-v2
 
 ::: {layout="[[70,30], [100]]"}
 - Verkeerde tests hebben een negatieve waarde
-- Paar anti patterns:
-  - The Mockery
-  - The Inspector
-  - The Liar
-
+- Behandel tests als productie code
 
 ![](media/darkside.jpg){fig-align="left"}
-
-
-::: footer
-https://digitaltapestry.net/testify/manual/AntiPatterns.html
 :::
 
-:::
-
-## The Mockery
-
-"A unit test contains so many mocks, stubs and/or fakes that the system under test isn’t even being tested at all, instead data returned from mocks is what is being tested."
-
-## The Inspector
-
-"A unit test that violates encapsulation in an effort to achieve 100% code coverage, but knows so much about what is going on in the object that any attempt to refactor will break the existing test and require any change to be reflected in the unit test."
-
-## The Liar
-
-"An entire unit test that passes all of the test cases it has and appears valid, but upon closer inspection it is discovered that it doesn’t really test the intended target at all."
-
-# Hoe voorkomen we deze anti patterns?
+# Waar moet je op letten?
 
 ## De unit van een unit test is niet een class
 
 <li>Focus op gedrag en voorkom het testen van implementatie details</li>
 <li class="fragment">Schrijf testen voor stabiele interfaces</li>
 <li class="fragment">Denk vanuit de gebruiker van je code</li>
+<li class="fragment">Gebruik de modules van je code als unit</li>
 <li class="fragment">Maak een class/method niet public als dat alleen nodig is voor testen</li>
 
 ## Implementatie details testen
@@ -162,7 +141,7 @@ namespace Tests {
 
 <li>Vervangende dependency voor in tests</li>
 <li>Handig voor volatile dependencies of om exceptions te kunnen testen</li>
-<li>Verschillende soorten test doubles</li>
+<li>Verschillende soorten test doubles, van simpel tot ingewikkeld</li>
 
 ::: {.fragment}
 <li>Maar zorgen wel voor meer coupling</li>
@@ -184,6 +163,7 @@ var jobValidator = new JobValidator();
 :::
 
 <li class="fragment">Maakt je test cases ook realistischer</li>
+<li class="fragment">Mocking library is niet perse nodig</li>
 
 ## Test doubles
 
