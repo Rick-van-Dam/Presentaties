@@ -140,7 +140,7 @@ namespace Tests {
 ## Test doubles
 
 <li>Vervangende dependency voor in tests</li>
-<li>Handig voor volatile dependencies of om exceptions te kunnen testen</li>
+<li>Handig voor volatile dependencies</li>
 <li>Verschillende soorten test doubles, van simpel tot ingewikkeld</li>
 
 ::: {.fragment}
@@ -155,14 +155,13 @@ _storageMock
 
 ::: {.fragment}
 
-<li>Gebruik de echte implementatie als dat kan</li>
+<li>Gebruik de echte implementatie als dat kan, maakt je test cases ook realistischer</li>
 
 ```cs
 var jobValidator = new JobValidator();
 ```
 :::
 
-<li class="fragment">Maakt je test cases ook realistischer</li>
 <li class="fragment">Mocking library is niet perse nodig</li>
 
 ## Test doubles
@@ -242,7 +241,7 @@ var request = FakeHttpRequestDataBuilder.Create()
 
 # IO in tests
 
-- Er zijn meer opties dan een testdouble gebruiken met IO.
+- Er zijn meer opties dan een test double gebruiken met IO.
 <li class="fragment">Testcontainers brengen dependencies zoals DB's onder controle</li>
 <li class="fragment">ASP .NET's WebApplicationFactory laat je je api in memory draaien</li>
 <li class="fragment">Tests kunnen nog steeds snel en stabiel zijn</li>
@@ -264,7 +263,8 @@ public async Task GetEmployeeById_ReturnsExpectedEmployee()
     });
 
     //Act
-    var response = await Sut.CreateClientFor<IEmployeeApiClient>(ClaimConstants.ReadRole).GetEmployeeById(employee.Id);
+    var response = await Sut.CreateClientFor<IEmployeeApiClient>(ClaimConstants.ReadRole)
+        .GetEmployeeById(employee.Id);
     
     //Assert
     await response.AssertStatusCode(HttpStatusCode.OK);
@@ -272,7 +272,7 @@ public async Task GetEmployeeById_ReturnsExpectedEmployee()
 }
 ```
 
-# IO in tests good or bad? 
+# Wat doen jullie met IO? 
 
 # Code Coverage
 
@@ -294,7 +294,6 @@ public async Task GetEmployeeById_ReturnsExpectedEmployee()
 - https://www.youtube.com/watch?v=EZ05e7EMOLM
 - https://www.continuousimprover.com/2023/04/unit-testing-scope.html
 - https://www.martinfowler.com/articles/mocksArentStubs.html
-- https://digitaltapestry.net/testify/manual/AntiPatterns.html
 
 # Libraries
 
