@@ -250,24 +250,20 @@ var request = FakeHttpRequestDataBuilder.Create()
 - https://github.com/Barsonax/CleanAspCoreWebApiTemplate
 
 ```cs
-[Test]
-public async Task GetEmployeeById_ReturnsExpectedEmployee()
+//Arrange
+var employee = new EmployeeFaker().Generate();
+Sut.SeedData(context =>
 {
-    //Arrange
-    var employee = new EmployeeFaker().Generate();
-    Sut.SeedData(context =>
-    {
-        context.Employees.Add(employee);
-    });
+    context.Employees.Add(employee);
+});
 
-    //Act
-    var response = await Sut.CreateClientFor<IEmployeeApiClient>(ClaimConstants.ReadRole)
-        .GetEmployeeById(employee.Id);
-    
-    //Assert
-    await response.AssertStatusCode(HttpStatusCode.OK);
-    await response.AssertJsonBodyIsEquivalentTo(new { Id = employee.Id });
-}
+//Act
+var response = await Sut.CreateClientFor<IEmployeeApiClient>(ClaimConstants.ReadRole)
+    .GetEmployeeById(employee.Id);
+
+//Assert
+await response.AssertStatusCode(HttpStatusCode.OK);
+await response.AssertJsonBodyIsEquivalentTo(new { Id = employee.Id });
 ```
 
 # Wat doen jullie met IO? 
