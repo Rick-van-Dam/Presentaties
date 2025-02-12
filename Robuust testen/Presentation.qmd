@@ -109,29 +109,27 @@ namespace Tests {
 ```{mermaid}
 classDiagram
 
-    Endpoint1 --* StringUtils
-    Endpoint2 --* StringUtils
+    Endpoint1 --* PatchBuilder
+    Endpoint2 --* PatchBuilder
 
     Endpoint1Tests ..> Endpoint1
     Endpoint2Tests ..> Endpoint2
 
-    StringUtilsTests ..> StringUtils
+    PatchBuilderTests ..> PatchBuilder
 
-    note for StringUtils "Dit is een stabiele interface \n Denk als een gebruiker van StringUtils \n Bepaal wel of aparte tests hier meerwaarde hebben"
+    note for PatchBuilder "Dit is een stabiele interface \n Denk als een gebruiker van PatchBuilder"
 
 namespace ExampleApi {
     class Endpoint1
     class Endpoint2
 }
 
-namespace Utils {
-    class StringUtils
-}
+class PatchBuilder
 
 namespace Tests {
     class Endpoint1Tests
     class Endpoint2Tests
-    class StringUtilsTests
+    class PatchBuilderTests
 }
 ```
 
