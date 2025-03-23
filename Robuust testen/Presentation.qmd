@@ -247,7 +247,7 @@ var request = FakeHttpRequestDataBuilder.Create()
 ## IO in Tests
 
 - Setup is generiek te regelen waardoor test cases zelf heel simpel blijven.
-- https://github.com/Barsonax/CleanAspCoreWebApiTemplate
+- https://github.com/Rick-van-Dam/CleanAspCoreWebApiTemplate
 
 ```cs
 //Arrange

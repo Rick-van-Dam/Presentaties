@@ -5,7 +5,7 @@ slideNumber: true
 title: "TestExamples Dotnet"
 css : "my-theme.css"
 format: revealjs
-footer: <https://github.com/Barsonax/TestExamplesDotnetPresentation>
+footer: <https://github.com/Rick-van-Dam/TestExamplesDotnetPresentation>
 chalkboard: true
 navigation-mode: vertical
 controls: true
@@ -81,7 +81,7 @@ context.Reservations.Add(new Reservation
 
 ## Wat is TestExamplesDotnet?
 
-<https://github.com/Barsonax/TestExamplesDotnet>
+<https://github.com/Rick-van-Dam/TestExamplesDotnet>
 
 Een repository met efficiente (integratie) test setups.
 
